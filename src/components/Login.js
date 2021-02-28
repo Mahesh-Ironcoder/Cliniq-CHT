@@ -2,26 +2,35 @@ import React, { useContext, useState } from "react";
 
 import {
 	Button,
-	Container,
 	TextField,
 	makeStyles,
-	Typography,
-	Avatar,
+	Grid,
+	Card,
+	CardHeader,
+	CardContent,
 	Link,
+	CardActions,
 } from "@material-ui/core";
-import LocalHospitalRoundedIcon from "@material-ui/icons/LocalHospitalRounded";
+import LocalHospitalIcon from "@material-ui/icons/LocalHospital";
+import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import { AppContext } from "../App.js";
 
 const useStyles = makeStyles((theme) => ({
-	ContainerStyles: {
+	LoginCardContainer: {
+		[theme.breakpoints.down("sm")]: { width: "100%", minWidth: "300px" },
+	},
+	cardHeaderStyle: {
 		display: "flex",
 		flexDirection: "column",
 		justifyContent: "center",
-		alignItems: "center",
 	},
 	form: {
-		marginTop: theme.spacing(8),
-		marginBottom: theme.spacing(6),
+		marginTop: theme.spacing(6),
+		marginBottom: theme.spacing(1),
+		display: "flex",
+		flexDirection: "column",
+		justifyContent: "space-around",
+		alignItems: "center",
 	},
 	submitbtn: {
 		margin: "1rem 0rem",
@@ -40,58 +49,68 @@ export default function Login(props) {
 
 	const classes = useStyles();
 	return (
-		<Container maxWidth='xs' className={classes.ContainerStyles}>
-			<Typography variant='h3'>CliniQ</Typography>
-			<Avatar className={classes.avatar}>
-				<LocalHospitalRoundedIcon />
-			</Avatar>
-
-			<form
-				onSubmit={(e) => {
-					e.preventDefault();
-					console.log(e);
-				}}
-				className={classes.form}
-			>
-				<TextField
-					variant='outlined'
-					label='Username or Email'
-					name='username'
-					fullWidth
-					required
-					margin='normal'
-					value={username}
-					onChange={(e) => setUsername(e.target.value)}
-				/>
-				<TextField
-					variant='outlined'
-					label='Password'
-					name='password'
-					margin='normal'
-					fullWidth
-					required
-					value={password}
-					onChange={(e) => setPassword(e.target.value)}
-				/>
-				<Button
-					fullWidth
-					type='submit'
-					variant='contained'
-					color='primary'
-					className={classes.submitbtn}
-					onClick={(e) => {
-						e.preventDefault();
-						console.log("login btn clicked");
-						login();
-					}}
-				>
-					Login
-				</Button>
-				<Link href=''>Forgot Password?</Link>
-			</form>
-			<Link href=''>
-				<Typography variant='subtitle1'>Create account</Typography>
-			</Link>
-		</Container>
+		<Grid container direction='row' justify='center' alignItems='center'>
+			<Grid item xs={1} sm={4} />
+			<Grid item xs={10} sm={3}>
+				<Card variant='elevation' raised className={classes.LoginCardContainer}>
+					<CardHeader
+						title='CliniQ'
+						titleTypographyProps={{ variant: "h2" }}
+						avatar={<LocalHospitalIcon fontSize='large' />}
+						className={classes.cardHeaderStyle}
+					/>
+					<CardContent>
+						<form className={classes.form}>
+							<TextField
+								autoFocus
+								margin='normal'
+								value={username}
+								onChange={(e) => {
+									setUsername(e.target.value);
+								}}
+								label='Username or EmailId'
+								variant='outlined'
+								fullWidth
+								required
+							/>
+							<TextField
+								color='primary'
+								margin='normal'
+								value={password}
+								onChange={(e) => {
+									setPassword(e.target.value);
+								}}
+								label='Password'
+								variant='outlined'
+								fullWidth
+								type='password'
+								required
+							/>
+							<Button
+								variant='contained'
+								color='primary'
+								className={classes.submitbtn}
+								type='submit'
+								onClick={(e) => login()}
+							>
+								Log in
+							</Button>
+						</form>
+						<Link href=''>Forgot password?</Link>
+						<CardActions>
+							<Button
+								fullWidth
+								color='primary'
+								margin='auto'
+								startIcon={<AccountCircleIcon />}
+							>
+								Create Account
+							</Button>
+						</CardActions>
+					</CardContent>
+				</Card>
+			</Grid>
+			<Grid item xs={1} sm={4} />
+		</Grid>
 	);
 }
