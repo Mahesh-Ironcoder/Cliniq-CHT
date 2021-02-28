@@ -1,6 +1,16 @@
 import React, { useReducer, useRef } from "react";
 
-import { makeStyles, Grid, Fab } from "@material-ui/core";
+import {
+	makeStyles,
+	Grid,
+	CardActions,
+	Card,
+	CardMedia,
+	AppBar,
+	Toolbar,
+	Typography,
+	IconButton,
+} from "@material-ui/core";
 import { Button, Box } from "@material-ui/core";
 import FlipCameraIosIcon from "@material-ui/icons/FlipCameraIos";
 
@@ -22,6 +32,22 @@ const useStyles = makeStyles((theme) => ({
 		position: "relative",
 		bottom: theme.spacing(15),
 		// border: "1px solid blue",
+	},
+	webcamImage: {
+		objectFit: "cover",
+		width: "100%",
+		height: "100%",
+		[theme.breakpoints.up("sm")]: {
+			width: "80vw",
+			height: "80vh",
+		},
+	},
+	appbarStyle: {},
+	actionBtns: {
+		[`${theme.breakpoints.down("sm")} and (orientation: portrait)`]: {
+			position: "relative",
+			bottom: "10%",
+		},
 	},
 }));
 
@@ -50,6 +76,10 @@ const extractInitArg = (initialArg) => {
 	return { ...initialArg };
 };
 
+const CustomizedWebcamComp = React.forwardRef((props, ref) => (
+	<Webcam ref={ref} {...props} />
+));
+
 //Actual functional component
 export default function Home() {
 	//component state
@@ -73,55 +103,43 @@ export default function Home() {
 		dispatch({ type: "flip" });
 	};
 	return (
-		<div className={classes.mainContainer}>
-			<Grid
-				container
-				direction='row'
-				justify='center'
-				alignItems='stretch'
-				className={classes.containerStyles}
-			>
-				<Grid item xs={0} sm={3}></Grid>
-				<Grid item xs={12} sm={6}>
-					<Webcam
-						width='100%'
-						ref={webcamRef}
-						videoConstraints={{ facingMode: state.um ? "environment" : "user" }}
-						screenshotFormat='image/png'
-						imageSmoothing
-						onUserMediaError={(e) => {
-							console.error("Webcam access error: ", e);
-						}}
-					/>
-					<Box
-						className={classes.boxStyle}
-						display='flex'
-						flexDirection='row'
-						justifyContent='spaceBetween'
-					>
-						<Box flex={1} alignSelf='center'>
-							<Button
-								fullWidth
-								variant='contained'
-								color='primary'
-								onClick={handleScan}
-							>
-								Scan
-							</Button>
-						</Box>
-						<Fab
-							size='small'
-							variant='extended'
-							color='primary'
-							onClick={handleFlip}
-							// marginLeft='0.1em'
-						>
-							<FlipCameraIosIcon fontSize='small' color='#FFF' />
-						</Fab>
-					</Box>
-				</Grid>
-				<Grid item xs={0} sm={3}></Grid>
+		<Grid container direction='column' justify='center' align='center'>
+			<Grid item style={{ height: "10%" }}>
+				<AppBar position='static' style={{ height: "90%" }}>
+					<Toolbar>
+						<Typography variant='h5'>Cliniq at your service</Typography>
+					</Toolbar>
+				</AppBar>
 			</Grid>
-		</div>
+			<Grid item container style={{ height: "90%" }}>
+				<Grid item sm={1} />
+				<Grid item xs={12} sm={10}>
+					<Card variant='elevation' raised style={{ height: "100%" }}>
+						<CardMedia
+							ref={webcamRef}
+							component={CustomizedWebcamComp}
+							className={classes.webcamImage}
+							videoConstraints={{
+								facingMode: state.um ? "environment" : "user",
+							}}
+							screenshotFormat='image/png'
+							imageSmoothing
+							onUserMediaError={(e) => {
+								console.error("Webcam access error: ", e);
+							}}
+						/>
+						<CardActions className={classes.actionBtns}>
+							<Button variant='contained' color='primary' fullWidth>
+								Scan me
+							</Button>
+							<IconButton>
+								<FlipCameraIosIcon color='primary' />
+							</IconButton>
+						</CardActions>
+					</Card>
+				</Grid>
+				<Grid item sm={1} />
+			</Grid>
+		</Grid>
 	);
 }
