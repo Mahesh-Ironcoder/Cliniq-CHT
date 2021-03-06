@@ -4,6 +4,7 @@ import React, { useState } from "react";
 
 import Login from "./components/Login";
 import Home from "./components/Home";
+import { CssBaseline } from "@material-ui/core";
 
 export const AppContext = React.createContext("");
 
@@ -20,6 +21,7 @@ function App() {
 
 	return (
 		<AppContext.Provider value={{ isLoggedIn, login, logout }}>
+			<CssBaseline/>
 			{!isLoggedIn && <Login />}
 			{isLoggedIn && <Home />}
 		</AppContext.Provider>
