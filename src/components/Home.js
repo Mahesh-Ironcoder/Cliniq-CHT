@@ -1,4 +1,4 @@
-import React, { useReducer, useRef } from "react";
+import React, { useReducer, useRef, useEffect, useState } from "react";
 
 import {
 	makeStyles,
@@ -11,10 +11,13 @@ import {
 	Typography,
 	IconButton,
 } from "@material-ui/core";
-import { Button, Box } from "@material-ui/core";
+import { Button } from "@material-ui/core";
 import FlipCameraIosIcon from "@material-ui/icons/FlipCameraIos";
 
 import Webcam from "react-webcam";
+
+import * as faceApi from "face-api.js";
+import { TinyFaceDetectorOptions } from "face-api.js";
 
 //Styles for the components in a material way
 const useStyles = makeStyles((theme) => ({
@@ -35,8 +38,8 @@ const useStyles = makeStyles((theme) => ({
 	},
 	webcamImage: {
 		objectFit: "cover",
-		width: "100%",
-		height: "100%",
+		// width: "100%",
+		// height: "100%",
 		[theme.breakpoints.up("sm")]: {
 			width: "80vw",
 			height: "80vh",
@@ -48,6 +51,12 @@ const useStyles = makeStyles((theme) => ({
 			position: "relative",
 			bottom: "10%",
 		},
+	},
+	cardRoot: { position: "relative" },
+	cardMediaRoot: { position: "absolute", width: "100%", height: "100%" },
+	cardActionsRoot: {
+		position: "absolute",
+		bottom: "10%",
 	},
 }));
 
@@ -93,6 +102,50 @@ export default function Home() {
 	const webcamRef = useRef(null);
 	const classes = useStyles();
 
+	const [dimenssions, setDimenssions] = useState({ width: 610, height: 480 });
+	useEffect(() => {
+		let width = webcamRef.current.video.offsetwidth;
+		let height = webcamRef.current.video.offsetheight;
+		setDimenssions({ width, height });
+	}, [webcamRef]);
+
+	useEffect(() => {
+		const video = webcamRef.current.video;
+		async function loadModels() {
+			await faceApi.loadTinyFaceDetectorModel("/models");
+		}
+		loadModels();
+
+		console.log(webcamRef.current);
+
+		let id;
+		video.addEventListener("play", () => {
+			const canvas = faceApi.createCanvasFromMedia(video);
+			video.insertAdjacentElement("afterend", canvas);
+			// const displaySize = {
+			// 	width: dimenssions.width,
+			// 	height: dimenssions.height,
+			// };
+			// faceApi.matchDimensions(canvas, displaySize);
+			id = setInterval(async () => {
+				const detections = await faceApi.detectAllFaces(
+					video,
+					new TinyFaceDetectorOptions()
+				);
+				console.log(detections);
+				// const resizedDetections = faceApi.resizeResults(
+				// 	detections,
+				// 	displaySize
+				// );
+				canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
+				faceApi.draw.drawDetections(canvas, detections);
+			}, 1000);
+		});
+		return () => {
+			clearInterval(id);
+		};
+	}, [dimenssions]);
+
 	//handles webcam scan and flip functionality
 	const handleScan = (e) => {
 		e.preventDefault();
@@ -102,6 +155,7 @@ export default function Home() {
 		e.preventDefault();
 		dispatch({ type: "flip" });
 	};
+
 	return (
 		<Grid container direction='column' justify='center' align='center'>
 			<Grid item style={{ height: "10%" }}>
@@ -114,25 +168,46 @@ export default function Home() {
 			<Grid item container style={{ height: "90%" }}>
 				<Grid item sm={1} />
 				<Grid item xs={12} sm={10}>
-					<Card variant='elevation' raised style={{ height: "100%" }}>
+					<Card
+						variant='elevation'
+						raised
+						style={{ height: "100%" }}
+						classes={{
+							root: classes.cardRoot,
+						}}
+					>
 						<CardMedia
 							ref={webcamRef}
 							component={CustomizedWebcamComp}
 							className={classes.webcamImage}
 							videoConstraints={{
 								facingMode: state.um ? "environment" : "user",
+								width: dimenssions.width,
+								height: dimenssions.height,
 							}}
 							screenshotFormat='image/png'
 							imageSmoothing
+							autoPlay
 							onUserMediaError={(e) => {
 								console.error("Webcam access error: ", e);
 							}}
+							classes={{
+								root: classes.cardMediaRoot,
+							}}
 						/>
-						<CardActions className={classes.actionBtns}>
-							<Button variant='contained' color='primary' fullWidth>
+						<CardActions
+							// className={classes.actionBtns}
+							classes={{ root: classes.cardActionsRoot }}
+						>
+							<Button
+								onClick={handleScan}
+								variant='contained'
+								color='primary'
+								fullWidth
+							>
 								Scan me
 							</Button>
-							<IconButton>
+							<IconButton onClick={handleFlip}>
 								<FlipCameraIosIcon color='primary' />
 							</IconButton>
 						</CardActions>

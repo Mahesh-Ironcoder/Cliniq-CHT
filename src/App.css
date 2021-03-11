@@ -1,1 +1,29 @@
+canvas {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: auto;
+}
 
+video{
+	
+}
+
+/* .MuiCard-root {
+	position: relative;
+}
+
+.MuiCardMedia-root {
+	position: absolute;
+	top: 0;
+	display: block;
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+.MuiCardActions-spacing{
+	position: absolute;
+	bottom: 10%;
+} */
