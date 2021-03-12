@@ -1,7 +1,6 @@
 import React from "react";
 
 import { Button, Box, Paper, makeStyles } from "@material-ui/core";
-// import FlipCameraIosIcon from "@material-ui/icons/FlipCameraIos";
 
 import Webcam from "react-webcam";
 import {
@@ -10,7 +9,6 @@ import {
 	draw,
 	resizeResults,
 } from "face-api.js";
-// import { KeyboardReturnRounded } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
 	webcamImage: {
@@ -35,21 +33,6 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-// const drawDetections = (canvas, faceDetections) => {
-// 	if (faceDetections.length === 0) {
-// 		return;
-// 	}
-// 	const ctxt = canvas.getContext("2d");
-// 	const [x, y, width, height] = [
-// 		parseInt(faceDetections[0].box.x),
-// 		parseInt(faceDetections[0].box.y),
-// 		parseInt(faceDetections[0].box.width),
-// 		parseInt(faceDetections[0].box.heigth),
-// 	];
-// 	console.log(x, y);
-// 	ctxt.clearRect(0, 0, canvas.width, canvas.height);
-// 	ctxt.strokeRect(x, y, width, height);
-// };
 
 export const WebCamComponent = React.forwardRef((props, ref) => {
 	const classes = useStyles();
@@ -67,6 +50,7 @@ export const WebCamComponent = React.forwardRef((props, ref) => {
 	let intervalId;
 
 	function detectFace() {
+		console.log("Face detection started:", Date.now());
 		const videoEle = ref.current.video;
 
 		const canvasEle = canvRef.current;
@@ -95,7 +79,7 @@ export const WebCamComponent = React.forwardRef((props, ref) => {
 	}
 
 	function stopFace() {
-		console.log("Stopped detecting");
+		console.log("Face stopped started:", Date.now());
 		clearInterval(intervalId);
 	}
 
@@ -115,7 +99,6 @@ export const WebCamComponent = React.forwardRef((props, ref) => {
 					console.error("Webcam access error: ", e);
 				}}
 				onPlay={detectFace}
-				onEnded={stopFace}
 			></Paper>
 			<canvas className={classes.canvasclass} ref={canvRef}></canvas>
 		</>

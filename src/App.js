@@ -4,9 +4,12 @@ import React, { useState, useEffect } from "react";
 
 import { loadTinyFaceDetectorModel } from "face-api.js";
 
+import { CssBaseline } from "@material-ui/core";
+import { ThemeProvider } from "@material-ui/core/styles";
+
 import Login from "./components/Login.jsx";
 import Home from "./components/Home.jsx";
-import { CssBaseline } from "@material-ui/core";
+import { theme } from "./theme";
 
 export const AppContext = React.createContext("");
 
@@ -33,9 +36,11 @@ function App() {
 
 	return (
 		<AppContext.Provider value={{ isLoggedIn, login, logout }}>
-			<CssBaseline />
-			{!isLoggedIn && <Login />}
-			{isLoggedIn && <Home />}
+			<ThemeProvider theme={theme}>
+				<CssBaseline />
+				{!isLoggedIn && <Login />}
+				{isLoggedIn && <Home />}
+			</ThemeProvider>
 		</AppContext.Provider>
 	);
 }

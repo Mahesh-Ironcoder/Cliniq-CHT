@@ -34,10 +34,15 @@ const useStyles = makeStyles((theme) => ({
 	},
 	submitbtn: {
 		margin: "1rem 0rem",
+		width: "40%",
+		color: theme.palette.primary.contrastText,
 	},
 	avatar: {
 		marginTop: theme.spacing(3),
 		background: theme.palette.info.main,
+	},
+	linkStyle: {
+		color: theme.palette.grey[500],
 	},
 }));
 
@@ -48,6 +53,7 @@ export default function Login(props) {
 	const { login } = useContext(AppContext);
 
 	const classes = useStyles();
+	
 	return (
 		<Grid container direction='row' justify='center' alignItems='center'>
 			<Grid item xs={1} sm={4} />
@@ -72,9 +78,10 @@ export default function Login(props) {
 								variant='outlined'
 								fullWidth
 								required
+								color='secondary'
 							/>
 							<TextField
-								color='primary'
+								color='secondary'
 								margin='normal'
 								value={password}
 								onChange={(e) => {
@@ -89,6 +96,7 @@ export default function Login(props) {
 							<Button
 								variant='contained'
 								color='primary'
+								size='large'
 								className={classes.submitbtn}
 								type='submit'
 								onClick={(e) => login()}
@@ -96,11 +104,13 @@ export default function Login(props) {
 								Log in
 							</Button>
 						</form>
-						<Link href=''>Forgot password?</Link>
+						<Link className={classes.linkStyle} href=''>
+							Forgot password?
+						</Link>
 						<CardActions>
 							<Button
 								fullWidth
-								color='primary'
+								color='secondary'
 								margin='auto'
 								startIcon={<AccountCircleIcon />}
 							>

@@ -10,7 +10,6 @@ import {
 } from "@material-ui/core";
 
 import { WebCamComponent } from "./WebCamComponent";
-// import Demo from "./Demo";
 
 const useCustomeStyles = makeStyles((theme) => ({
 	gridContainer: {
@@ -32,17 +31,9 @@ const useCustomeStyles = makeStyles((theme) => ({
 export default function Home() {
 	const classes = useCustomeStyles();
 	const webcamRef = React.useRef(null);
-	const canvasRef = React.useRef(null);
-	const [state, setState] = React.useState(true);
 
 	return (
-		<Grid
-			container
-			direction='column'
-			justify='flex-start'
-			align='center'
-			// spacing={6}
-		>
+		<Grid container direction='column' justify='flex-start' align='center'>
 			<Grid item className={classes.appBar}>
 				<AppBar position='static' style={{ height: "100%" }}>
 					<Toolbar>
@@ -56,23 +47,13 @@ export default function Home() {
 					item
 					xs={12}
 					sm={10}
-					// ref={gridRef}
 					className={classes.gridContainer}
-					// style={{ positiom: "relative" }}
 					zeroMinWidth
 				>
 					<WebCamComponent ref={webcamRef} canvasRef />
-					{/* <canvas ref={canvasRef} className={classes.canvasclass} />
-					</WebCamComponent> */}
-					{/* {state ? <WebCamComponent ref={webcamRef} canvasRef /> : <Demo />} */}
-					{/* <h3>width: {width}</h3>
-					<h3>height: {height}</h3> */}
 				</Grid>
 				<Grid item sm={1} />
 			</Grid>
-			{/* <Grid item>
-				<Button onClick={(e) => setState(!state)}>Click me</Button>
-			</Grid> */}
 		</Grid>
 	);
 }
