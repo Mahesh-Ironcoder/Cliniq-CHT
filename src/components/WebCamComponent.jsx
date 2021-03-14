@@ -1,13 +1,16 @@
 import React from "react";
 
-import { Button, Box, Paper, makeStyles } from "@material-ui/core";
+import { Paper, makeStyles } from "@material-ui/core";
 
 import Webcam from "react-webcam";
+import * as faceapi from "face-api.js";
 import {
 	TinyFaceDetectorOptions,
 	detectAllFaces,
 	draw,
 	resizeResults,
+	BoxWithText,
+	Rect,
 } from "face-api.js";
 
 const useStyles = makeStyles((theme) => ({
@@ -33,19 +36,35 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
+const DrawLabelText = ({ ctxt, x, y, maxlength, texts }) => {
+	ctxt.font = "16px Arial blue";
+	ctxt.fillStyle = "blue";
+	ctxt.fillRect(x - 1, y - 60, maxlength + 2, 60);
+	ctxt.fillStyle = "#fff";
+	ctxt.fillText(
+		`Age: ${parseInt(texts.age)}`,
+		parseInt(x),
+		parseInt(y) - 40,
+		maxlength
+	);
+	ctxt.fillText(
+		`Gender: ${texts.gender}`,
+		parseInt(x),
+		parseInt(y) - 15,
+		maxlength
+	);
+};
 
 export const WebCamComponent = React.forwardRef((props, ref) => {
 	const classes = useStyles();
 
 	const canvRef = React.useRef();
 
-	React.useEffect(() => {
-		const paperWidth = ref.current.video.offsetWidth;
-		const paperHeight = ref.current.video.offsetHeight;
-		canvRef.current.width = paperWidth;
-		canvRef.current.height = paperHeight;
-		// console.log(paperWidth, paperHeight);
-	});
+	const { userMode } = props;
+
+	const videoConstraints = {
+		facingMode: !userMode ? "user" : "environment",
+	};
 
 	let intervalId;
 
@@ -59,19 +78,38 @@ export const WebCamComponent = React.forwardRef((props, ref) => {
 		console.log("canvas height: ", canvasEle.height);
 		let i = 1;
 		intervalId = setInterval(() => {
+			const useTinyModel = true;
 			detectAllFaces(videoEle, new TinyFaceDetectorOptions())
+				.withAgeAndGender()
 				.then((detections) => {
 					const detectionsForSize = resizeResults(detections, {
 						width: canvasEle.width,
 						height: canvasEle.height,
 					});
 					console.log(i, ". Detections: ", detections);
-					canvasEle
-						.getContext("2d")
-						.clearRect(0, 0, canvasEle.width, canvasEle.height);
-					draw.drawDetections(canvasEle, detectionsForSize, {
+
+					//defining score as undefined so that it wont be displayed
+					let { detection } = detectionsForSize[0];
+					detection._score = undefined;
+
+					const ctxt = canvasEle.getContext("2d");
+
+					ctxt.clearRect(0, 0, canvasEle.width, canvasEle.height);
+					const { x, y } = detectionsForSize[0].detection.box.topLeft;
+					DrawLabelText({
+						ctxt,
+						x,
+						y,
+						maxlength: detectionsForSize[0].detection.box.width,
+						texts: {
+							age: detectionsForSize[0].age,
+							gender: detectionsForSize[0].gender,
+						},
+					});
+					draw.drawDetections(canvasEle, detection, {
 						withScore: false,
 					});
+
 					i += 1;
 				})
 				.catch((e) => console.log("error in detecting: ", e));
@@ -84,15 +122,21 @@ export const WebCamComponent = React.forwardRef((props, ref) => {
 	}
 
 	React.useEffect(() => {
+		const paperWidth = ref.current.video.offsetWidth;
+		const paperHeight = ref.current.video.offsetHeight;
+		canvRef.current.width = paperWidth;
+		canvRef.current.height = paperHeight;
+		// console.log(paperWidth, paperHeight);
 		return stopFace;
 	});
+
 	return (
 		<>
 			<Paper
 				className={classes.webcamImage}
 				ref={ref}
 				component={Webcam}
-				videoConstraints
+				videoConstraints={videoConstraints}
 				screenshotFormat='image/png'
 				imageSmoothing
 				onUserMediaError={(e) => {

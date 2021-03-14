@@ -2,7 +2,7 @@ import "./App.css";
 
 import React, { useState, useEffect } from "react";
 
-import { loadTinyFaceDetectorModel } from "face-api.js";
+import { loadTinyFaceDetectorModel, loadAgeGenderModel } from "face-api.js";
 
 import { CssBaseline } from "@material-ui/core";
 import { ThemeProvider } from "@material-ui/core/styles";
@@ -31,6 +31,13 @@ function App() {
 			})
 			.catch((e) => {
 				console.log("Error in loading model: ", e);
+			});
+		loadAgeGenderModel("/models")
+			.then((done) => {
+				console.log("Face landmark - Model loaded: ", done);
+			})
+			.catch((e) => {
+				console.log("Face landmark - Error in loading model: ", e);
 			});
 	});
 
