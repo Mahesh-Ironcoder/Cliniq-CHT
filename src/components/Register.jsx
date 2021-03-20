@@ -1,4 +1,11 @@
-import { Button, Grid, Link, Box, Container } from "@material-ui/core";
+import {
+	Button,
+	Grid,
+	Link,
+	Box,
+	Container,
+	TextField,
+} from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import React from "react";
 import { AppContext } from "../App";
@@ -22,6 +29,7 @@ function dataURItoBlob(dataURI) {
 
 	return new Blob([ia], { type: mimeString });
 }
+
 const loginStyles = makeStyles((theme) => ({
 	loginContainer: {
 		padding: theme.spacing(2),
@@ -35,9 +43,11 @@ const loginStyles = makeStyles((theme) => ({
 	boxContainer: { width: "100%", position: "relative", flexGrow: "1" },
 	linkStyles: { alignSelf: "flex-start" },
 }));
+
 export default function Demo() {
 	const webcamRef = React.useRef(null);
 	const { login, setIsLoading } = React.useContext(AppContext);
+	const [userName, setUserName] = React.useState("");
 	const classes = loginStyles();
 
 	const handleClick = (e) => {
@@ -48,9 +58,10 @@ export default function Demo() {
 		let blobIMG = dataURItoBlob(img);
 
 		formdata.append("img1", blobIMG);
+		formdata.append("username", userName);
 		setIsLoading(true);
 
-		fetch("/login", {
+		fetch("/register", {
 			method: "POST",
 			body: formdata,
 			redirect: "follow",
@@ -79,17 +90,27 @@ export default function Demo() {
 						hi
 						<WebCamComponent userMode={0} ref={webcamRef} />
 					</Box>
+					<TextField
+						margin='normal'
+						value={userName}
+						label='Username or EmailId'
+						variant='outlined'
+						fullWidth
+						required
+						color='secondary'
+						onChange={(e) => {
+							e.preventDefault();
+							setUserName(e.target.value);
+						}}
+					/>
 					<Button
 						onClick={handleClick}
 						variant='contained'
 						color='primary'
 						size='large'
 					>
-						Login
+						Register
 					</Button>
-					<Link href='' color='textSecondary'>
-						Don't have an account. Register here
-					</Link>
 				</Container>
 			</Grid>
 			<Grid item xs={1} sm={2} />

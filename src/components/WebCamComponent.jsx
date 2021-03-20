@@ -3,14 +3,11 @@ import React from "react";
 import { Paper, makeStyles } from "@material-ui/core";
 
 import Webcam from "react-webcam";
-import * as faceapi from "face-api.js";
 import {
 	TinyFaceDetectorOptions,
 	detectAllFaces,
 	draw,
 	resizeResults,
-	BoxWithText,
-	Rect,
 } from "face-api.js";
 
 const useStyles = makeStyles((theme) => ({
@@ -80,7 +77,7 @@ export const WebCamComponent = React.forwardRef((props, ref) => {
 		intervalId = setInterval(() => {
 			const useTinyModel = true;
 			detectAllFaces(videoEle, new TinyFaceDetectorOptions())
-				.withAgeAndGender()
+				.withAgeAndGender(useTinyModel)
 				.then((detections) => {
 					const detectionsForSize = resizeResults(detections, {
 						width: canvasEle.width,
@@ -122,10 +119,8 @@ export const WebCamComponent = React.forwardRef((props, ref) => {
 	}
 
 	React.useEffect(() => {
-		const paperWidth = ref.current.video.offsetWidth;
-		const paperHeight = ref.current.video.offsetHeight;
-		canvRef.current.width = paperWidth;
-		canvRef.current.height = paperHeight;
+		canvRef.current.width = ref.current.video.offsetWidth;
+		canvRef.current.height = ref.current.video.offsetHeight;
 		// console.log(paperWidth, paperHeight);
 		return stopFace;
 	});
@@ -142,7 +137,7 @@ export const WebCamComponent = React.forwardRef((props, ref) => {
 				onUserMediaError={(e) => {
 					console.error("Webcam access error: ", e);
 				}}
-				onPlay={detectFace}
+				// onPlay={detectFace}
 			></Paper>
 			<canvas className={classes.canvasclass} ref={canvRef}></canvas>
 		</>

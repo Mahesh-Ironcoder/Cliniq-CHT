@@ -69,8 +69,6 @@ const reducer = (state, action) => {
 	}
 };
 
-// Gives the inital state for the component
-
 //Actual functional component
 export default function Home() {
 	const [state, dispatch] = React.useReducer(
@@ -110,7 +108,6 @@ export default function Home() {
 					xs={12}
 					sm={10}
 					className={classes.gridContainer}
-					// zeroMinWidth
 				>
 					<Grid item>
 						<WebCamComponent ref={webcamRef} canvasRef />
