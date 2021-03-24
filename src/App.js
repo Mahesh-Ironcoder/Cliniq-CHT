@@ -1,6 +1,6 @@
 import "./App.css";
 
-import Demo from "./components/Demo";
+import FaceLogin from "./components/FaceLogin";
 import Home from "./components/Home.jsx";
 import Login from "./components/Login.jsx";
 import Loading from "./components/Loading";
@@ -69,7 +69,7 @@ function App() {
 							<Login />
 						</Route>
 						<Route path='/facelogin' exact>
-							<Demo />
+							<FaceLogin />
 						</Route>
 						<Route path='/home' exact>
 							<Home />
