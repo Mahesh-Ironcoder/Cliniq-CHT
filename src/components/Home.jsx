@@ -1,4 +1,8 @@
-import React from "react";
+import { WebCamComponent } from "./WebCamComponent";
+import { AppContext } from "../App";
+
+import SwitchCameraIcon from "@material-ui/icons/SwitchCamera";
+import MenuIcon from "@material-ui/icons/Menu";
 
 import {
 	Grid,
@@ -11,9 +15,9 @@ import {
 	IconButton,
 } from "@material-ui/core";
 
-import SwitchCameraIcon from "@material-ui/icons/SwitchCamera";
+import React from "react";
 
-import { WebCamComponent } from "./WebCamComponent";
+import { useHistory } from "react-router";
 
 const useCustomeStyles = makeStyles((theme) => ({
 	gridContainer: {
@@ -44,6 +48,14 @@ const useCustomeStyles = makeStyles((theme) => ({
 		bottom: "0",
 		width: "100%",
 	},
+	appbarStyles: {
+		paddingRight: theme.spacing(1),
+		display: "flex",
+		flexDirection: "row",
+	},
+	appHeaderStyle: {
+		flexGrow: 1,
+	},
 }));
 
 const extractInitArg = (initialArg) => {
@@ -71,7 +83,7 @@ const reducer = (state, action) => {
 
 //Actual functional component
 export default function Home() {
-	const [state, dispatch] = React.useReducer(
+	const [state, homeDispatch] = React.useReducer(
 		reducer,
 		{ userMode: 0, frames: [] },
 		extractInitArg
@@ -79,23 +91,49 @@ export default function Home() {
 
 	const classes = useCustomeStyles();
 	const webcamRef = React.useRef(null);
+	const { dispatch } = React.useContext(AppContext);
+	let history = useHistory();
 
 	const handleScan = (e) => {
 		e.preventDefault();
-		dispatch({ type: "scan", payload: { webcamRef } });
+		homeDispatch({ type: "scan", payload: { webcamRef } });
 	};
 	const handleFlip = (e) => {
 		e.preventDefault();
 		console.info("flipped");
-		dispatch({ type: "flip" });
+		homeDispatch({ type: "flip" });
+	};
+
+	const handleLogout = (e) => {
+		e.preventDefault();
+		dispatch({ type: "auth", payload: { isLoading: false } });
+		dispatch({ type: "alert", payload: { msg: `You are logged out` } });
+		history.push("/");
 	};
 
 	return (
 		<Grid container direction='column' justify='flex-start' align='center'>
 			<Grid item className={classes.appBar} style={{ height: "10%" }}>
 				<AppBar position='static' style={{ height: "100%" }}>
-					<Toolbar>
+					{/* <Toolbar>
 						<Typography variant='h5'>Cliniq at your service</Typography>
+					</Toolbar>
+					<Button>Logout</Button> */}
+					<Toolbar disableGutters className={classes.appbarStyles}>
+						<IconButton>
+							<MenuIcon />
+						</IconButton>
+						<Typography variant='h5' className={classes.appHeaderStyle}>
+							CliniQ
+						</Typography>
+						<Button
+							alignSelf='flex-end'
+							variant='contained'
+							color='secondary'
+							onClick={handleLogout}
+						>
+							Logout
+						</Button>
 					</Toolbar>
 				</AppBar>
 			</Grid>

@@ -10,6 +10,7 @@ import {
 	CardContent,
 	Link,
 	CardActions,
+	Box,
 } from "@material-ui/core";
 import LocalHospitalIcon from "@material-ui/icons/LocalHospital";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
@@ -44,6 +45,10 @@ const useStyles = makeStyles((theme) => ({
 	linkStyle: {
 		color: theme.palette.grey[500],
 	},
+	faceunloackLink: {
+		color: theme.palette.grey[500],
+		float: "right",
+	},
 }));
 
 export default function Login(props) {
@@ -53,7 +58,7 @@ export default function Login(props) {
 	const { login } = useContext(AppContext);
 
 	const classes = useStyles();
-	
+
 	return (
 		<Grid container direction='row' justify='center' alignItems='center'>
 			<Grid item xs={1} sm={4} />
@@ -99,20 +104,29 @@ export default function Login(props) {
 								size='large'
 								className={classes.submitbtn}
 								type='submit'
-								onClick={(e) => login()}
+								onClick={(e) => {
+									e.preventDefault();
+									login(true);
+								}}
 							>
 								Log in
 							</Button>
 						</form>
-						<Link className={classes.linkStyle} href=''>
-							Forgot password?
-						</Link>
+						<Box>
+							<Link className={classes.linkStyle} href=''>
+								Forgot password?
+							</Link>
+							<Link className={classes.faceunloackLink} href='/facelogin'>
+								Face Unlock
+							</Link>
+						</Box>
 						<CardActions>
 							<Button
 								fullWidth
 								color='secondary'
 								margin='auto'
 								startIcon={<AccountCircleIcon />}
+								href='/fregister'
 							>
 								Create Account
 							</Button>

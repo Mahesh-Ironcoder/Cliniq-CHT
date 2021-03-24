@@ -1,8 +1,11 @@
-import { Button, Grid, Box, Container, TextField } from "@material-ui/core";
-import { makeStyles } from "@material-ui/styles";
-import React from "react";
 import { AppContext } from "../App";
 import { WebCamComponent } from "./WebCamComponent";
+
+import { Button, Grid, Link, Box, Container } from "@material-ui/core";
+import { makeStyles } from "@material-ui/styles";
+
+import React from "react";
+
 import { useHistory } from "react-router-dom";
 
 function dataURItoBlob(dataURI) {
@@ -38,13 +41,10 @@ const loginStyles = makeStyles((theme) => ({
 	linkStyles: { alignSelf: "flex-start" },
 }));
 
-export default function Register() {
+export default function Demo() {
 	const webcamRef = React.useRef(null);
 	const { dispatch } = React.useContext(AppContext);
-	const [userName, setUserName] = React.useState("");
-
 	let history = useHistory();
-
 	const classes = loginStyles();
 
 	const handleClick = (e) => {
@@ -55,11 +55,10 @@ export default function Register() {
 		let blobIMG = dataURItoBlob(img);
 
 		formdata.append("img1", blobIMG);
-		formdata.append("username", userName);
 		// setIsLoading(true);
 		dispatch({ type: "loading", payload: { loading: true } });
 
-		fetch("/register", {
+		fetch("/login", {
 			method: "POST",
 			body: formdata,
 			redirect: "follow",
@@ -67,13 +66,23 @@ export default function Register() {
 			.then((resp) => {
 				// if
 				console.log("Response: ", resp);
-				if (resp.status === 200) {
-					history.push("/");
-				}
 				return resp.json();
 			})
 			.then((body) => {
-				dispatch({ type: "alert", payload: { msg: `${body.message}` } });
+				console.log("body: ", body);
+				dispatch({
+					type: "auth",
+					payload: { isLoggedIn: body.verificationResult.verified },
+				});
+				dispatch({
+					type: "alert",
+					payload: {
+						msg: `Login ${
+							body.verificationResult.verified ? "success" : "failed"
+						} ${body.message}`,
+					},
+				});
+				if (body.verificationResult.verified) history.push("/home");
 				dispatch({ type: "loading", payload: { loading: false } });
 			})
 			.catch((e) => {
@@ -90,27 +99,25 @@ export default function Register() {
 						hi
 						<WebCamComponent userMode={0} ref={webcamRef} />
 					</Box>
-					<TextField
-						margin='normal'
-						value={userName}
-						label='Username or EmailId'
-						variant='outlined'
-						fullWidth
-						required
-						color='secondary'
-						onChange={(e) => {
+					{/* <Button
+						onClick={(e) => {
 							e.preventDefault();
-							setUserName(e.target.value);
+							setAlerts([...alerts, "hi alert"]);
 						}}
-					/>
+					>
+						Alert
+					</Button> */}
 					<Button
 						onClick={handleClick}
 						variant='contained'
 						color='primary'
 						size='large'
 					>
-						Register
+						Login
 					</Button>
+					<Link href='/fregister' color='textSecondary'>
+						Don't have an account. Register here
+					</Link>
 				</Container>
 			</Grid>
 			<Grid item xs={1} sm={2} />

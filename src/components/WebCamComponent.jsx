@@ -137,7 +137,7 @@ export const WebCamComponent = React.forwardRef((props, ref) => {
 				onUserMediaError={(e) => {
 					console.error("Webcam access error: ", e);
 				}}
-				// onPlay={detectFace}
+				onPlay={detectFace}
 			></Paper>
 			<canvas className={classes.canvasclass} ref={canvRef}></canvas>
 		</>
